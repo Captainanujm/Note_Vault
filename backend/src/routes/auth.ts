@@ -26,7 +26,7 @@ router.post("/get-otp",async(req,res)=>{
         await newUser.save();
     }
     await sendOtpEmail(email,otp).then(() => {
-        res.json({ message: "OTP sent to email" });
+        res.status(200).json({ message: "OTP sent to email" });
       }).catch((error) => {
         console.error("Error sending OTP email:", error);
         res.status(500).json({ message: "Error sending OTP email" });
@@ -36,7 +36,7 @@ router.post("/get-otp",async(req,res)=>{
 })
 router.post("/verify-otp",async(req,res)=>{
     const {email,otp}=req.body;
-    if(!email || !otp){
+    if(!email || !otp||email==""){
         return res.status(400).json({message:"Email and otp is required"});
     }
     const user=await User.findOne({email});
@@ -46,7 +46,7 @@ router.post("/verify-otp",async(req,res)=>{
         user.otp=undefined;
         user.otpExpiry=undefined;
         await user.save();
-        return res.json({message:"OTP verified successfully"});
+        return res.status(200).json({message:"OTP verified successfully"});
     }
 })
 export default router;
