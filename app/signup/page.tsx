@@ -3,7 +3,10 @@ import React from 'react'
 import {useState,useRef,useEffect} from 'react'
 import axios from 'axios';
 import Image from 'next/image';
+import { toast } from "react-toastify";
+import {useRouter} from "next/navigation";
 const page = () => {
+  const router=useRouter();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [show,setShow]=useState(false);
@@ -27,12 +30,12 @@ const page = () => {
          try{
            const res=await axios.post("http://localhost:5000/api/auth/get-otp",{email,name,dob});
        if(res.status===200){
-          console.log("OTP sent successfully");
+          toast.success("OTP sent successfully");
             setGetOTPClicked(true);
         }
          }catch(error:any){
           if (error.response) {
-            console.log(error.response.data.message);
+           toast.error(error.response.data.message);
           } else {
             console.log("Network Error:", error.message);
           }
@@ -42,7 +45,12 @@ const page = () => {
        const handleSignUPClick=async()=>{
        const res= await axios.post("http://localhost:5000/api/auth/verify-otp",{email,otp,name,dob});
        if(res.status===200){
-         console.log("User signed up successfully");
+        if(res.data.token){
+          localStorage.setItem("token",res.data.token);
+          router.push("/dashboard");
+        }
+         toast.success("User signed up successfully");
+         
        }
        }
       useEffect(() => {
@@ -214,7 +222,7 @@ const page = () => {
 {getOTPclicked?(<button onClick={handleSignUPClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Sign In</button>):(<button onClick={handleGetOTPClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Get OTP</button>)}
 
 <div className='flex items-center max-w-md justify-center'>
-  <span >Already have an account? <span className='text-[#367AFF] underline text-[16px] font-medium'>Sign in</span></span>
+  <span >Already have an account? <span onClick={()=>router.push("/signin")} className='text-[#367AFF] cursor-pointer underline text-[16px] font-medium'>Sign in</span></span>
 </div>
 
       </div>

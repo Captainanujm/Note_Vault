@@ -2,8 +2,11 @@
 import React from 'react'
 import axios from 'axios';
 import {useState,useRef,useEffect} from 'react'
+import { toast } from "react-toastify";
+import {useRouter} from "next/navigation";
 import Image from 'next/image';
 const page = () => {
+  const router=useRouter();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [show,setShow]=useState(false);
@@ -16,12 +19,16 @@ const page = () => {
         try{
  const res= await axios.post("http://localhost:5000/api/auth/verify-otp",{email,otp});
        if(res.status===200){
-         console.log("User signed in successfully");
+         toast.success("User signed in successfully");
        }
+        if(res.data.token){
+          localStorage.setItem("token",res.data.token);
+          router.push("/dashboard");
+        }
         }
       catch (error: any) {
     if (error.response) {
-      console.log(error.response.data.message);
+    toast.error(error.response.data.message);
     } else {
       // network error ya server down
       console.log("Network Error:", error.message);
@@ -32,14 +39,14 @@ const page = () => {
            try{
                const res=await axios.post("http://localhost:5000/api/auth/get-otp",{email});
            if(res.status===200){
-            console.log("OTP sent to email");
+           toast.success("OTP sent to email");
             setGetOTPClicked(true);
            }else{
-            console.log("Error sending OTP");
+           toast.error("Error sending OTP");
            }
            }catch(error:any){
             if (error.response) {
-              console.log(error.response.data.message);
+             toast.error(error.response.data.message);
             } else {
               console.log("Network Error:", error.message);
             }
@@ -69,7 +76,7 @@ const page = () => {
 <path d="M14.1607 22.5205C13.0532 22.1945 12.0682 21.584 11.2908 20.7739L4.92322 27.1199L7.23442 29.4233L14.1607 22.5205Z" fill="#367AFF"/>
 <path d="M11.2377 20.7178C10.4737 19.9026 9.91718 18.8917 9.65228 17.7688L0.855713 20.1179L1.70167 23.2643L11.2377 20.7178Z" fill="#367AFF"/>
 </svg>
-<span className='font-[24px] font-semibold m-2'>HD</span>
+<span className='font-[24px] font-bold m-1'>HD</span>
     </div>
       
       <div className='flex flex-col gap-2 justify-center m-auto lg:ml-18 lg:w-1/2 min-h-screen'>
@@ -193,7 +200,7 @@ const page = () => {
 
 {getOTPclicked?(<button onClick={handleSignINClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Sign In</button>):(<button onClick={handleGetOTPClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Get OTP</button>)}
 <div className='flex items-center max-w-md justify-center'>
-  <span >Need an account? <span className='text-[#367AFF] underline text-[16px] font-medium'>Create one</span></span>
+  <span >Need an account? <span onClick={()=>router.push("/signup")} className='text-[#367AFF] cursor-pointer underline text-[16px] font-medium'>Create one</span></span>
 </div>
 
       </div>
