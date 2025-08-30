@@ -1,18 +1,59 @@
 "use client";
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
+import axios from 'axios';
+  interface Note {
+  _id: string;
+  content: string;
+}
 const page = () => {
-     const [notes, setNotes] = useState<string[]>([]);
+     const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState("");
+  const [name,setName]=useState("");
+  const [email,setEmail]=useState("");
+
 const [adding,setAdding]=useState(false);
-  const addNote = () => {
-    if (!newNote.trim()) return;
-    setNotes([...notes, newNote]);
-    setAdding(false);
-    setNewNote("");
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/dashboard", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+
+      setName(res.data.user.name);
+      setEmail(res.data.user.email);
+      setNotes(res.data.notes);
+    } catch (err) {
+      console.error("Failed to fetch data", err);
+    }
   };
 
-  const deleteNote = (index: number) => {
-    setNotes(notes.filter((_, i) => i !== index));
+  fetchData();
+}, []);
+  const addNote = async() => {
+   if (!newNote.trim()) return;
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/dashboard",
+        { content: newNote },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+      setNotes([res.data, ...notes]);
+      setAdding(false);
+      setNewNote("");
+    } catch (err) {
+      console.error("Failed to add note", err);
+    }
+  };
+
+   const deleteNote = async (id: string) => {
+    try {
+      await axios.delete(`http://localhost:5000/dashboard/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setNotes(notes.filter((n) => n._id !== id));
+    } catch (err) {
+      console.error("Failed to delete note", err);
+    }
   };
 
   return (
@@ -34,10 +75,10 @@ const [adding,setAdding]=useState(false);
 
         </div>
         <div className='bg-white border shadow-lg h-[130px] rounded-lg lg:min-w-md min-w-screen px-10 py-10'>
-            <h1 className='font-bold text-[24px]'>Welcome Anuj!</h1>
+            <h1 className='font-bold text-[24px]'>Welcome {name}!</h1>
             <div className='flex gap-1 font-semibold text-[16px]'>
                 <p>Email:</p>
-  <p>captainanuj2004@gmail.com</p>
+  <p>{email}</p>
             </div>
           </div>
           <div className='lg:min-w-md min-w-screen px-5'>
@@ -71,9 +112,9 @@ const [adding,setAdding]=useState(false);
       key={index}
       className="px-4 py-3 rounded-lg border shadow-sm flex gap-4 items-center justify-between"
     >
-      <span>{note}</span>
+      <span>{note.content}</span>
       <button
-        onClick={() => deleteNote(index)}
+        onClick={() => deleteNote(note._id)}
         className="text-black font-semibold hover:underline"
       >
         Delete

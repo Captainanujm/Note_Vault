@@ -3,6 +3,7 @@ import connectDB from "./db";
 import { Router } from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth";
+import notesRoutes from "./routes/Notes";
 const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 5000;
@@ -12,6 +13,7 @@ app.use(express.json());
 
 // Simple route
 connectDB();
+app.use("/dashboard",notesRoutes)
 app.use("/api/auth",authRoutes);
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello from TypeScript backend 🚀");
