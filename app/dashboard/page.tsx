@@ -15,7 +15,7 @@ const [adding,setAdding]=useState(false);
 useEffect(() => {
   const fetchData = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/dashboard", {
+      const res = await axios.get("https://note-vault-4.onrender.com/dashboard", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
 
@@ -33,7 +33,7 @@ useEffect(() => {
    if (!newNote.trim()) return;
     try {
       const res = await axios.post(
-        "http://localhost:5000/dashboard",
+        "https://note-vault-4.onrender.com/dashboard",
         { content: newNote },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
@@ -48,9 +48,10 @@ const signOut = () => {
   localStorage.removeItem("token");  
   window.location.href = "/signin"; 
 };
+
    const deleteNote = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:5000/dashboard/${id}`, {
+      await axios.delete(`https://note-vault-4.onrender.com/dashboard/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setNotes(notes.filter((n) => n._id !== id));

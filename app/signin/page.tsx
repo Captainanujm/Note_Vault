@@ -18,7 +18,7 @@ const page = () => {
   }
        const handleSignINClick=async()=>{
         try{
- const res= await axios.post("http://localhost:5000/api/auth/verify-otp",{email,otp,keepLoggedIn});
+ const res= await axios.post("https://note-vault-4.onrender.com/api/auth/verify-otp",{email,otp,keepLoggedIn});
        if(res.status===200){
          toast.success("User signed in successfully");
        }
@@ -38,7 +38,7 @@ const page = () => {
        }
     const handleGetOTPClick=async()=>{
            try{
-               const res=await axios.post("http://localhost:5000/api/auth/get-otp",{email});
+               const res=await axios.post("https://note-vault-4.onrender.com/api/auth/get-otp",{email});
            if(res.status===200){
            toast.success("OTP sent to email");
             setGetOTPClicked(true);

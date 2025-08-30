@@ -28,7 +28,7 @@ const page = () => {
        }
        const handleGetOTPClick=async()=>{
          try{
-           const res=await axios.post("http://localhost:5000/api/auth/get-otp",{email,name,dob});
+           const res=await axios.post("https://note-vault-4.onrender.com/api/auth/get-otp",{email,name,dob});
        if(res.status===200){
           toast.success("OTP sent successfully");
             setGetOTPClicked(true);
@@ -43,7 +43,7 @@ const page = () => {
        
        }
        const handleSignUPClick=async()=>{
-       const res= await axios.post("http://localhost:5000/api/auth/verify-otp",{email,otp,name,dob});
+       const res= await axios.post("https://note-vault-4.onrender.com/api/auth/verify-otp",{email,otp,name,dob});
        if(res.status===200){
         if(res.data.token){
           localStorage.setItem("token",res.data.token);
@@ -194,7 +194,6 @@ const page = () => {
                 />
               </svg>
             ) : (
-              // 👁️ eye off
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
