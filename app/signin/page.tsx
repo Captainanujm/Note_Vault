@@ -10,6 +10,7 @@ const page = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [show,setShow]=useState(false);
+  const[keepLoggedIn,setKeepLoggedIn]=useState(false);
    const[getOTPclicked,setGetOTPClicked]=useState(false);
        const otpInputRef = useRef<HTMLInputElement>(null);
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,7 +18,7 @@ const page = () => {
   }
        const handleSignINClick=async()=>{
         try{
- const res= await axios.post("http://localhost:5000/api/auth/verify-otp",{email,otp});
+ const res= await axios.post("http://localhost:5000/api/auth/verify-otp",{email,otp,keepLoggedIn});
        if(res.status===200){
          toast.success("User signed in successfully");
        }
@@ -187,6 +188,8 @@ const page = () => {
 <div className='flex gap-2 mt-2 items-center font-medium text-[16px]'>
   <input
     type="checkbox"
+    checked={keepLoggedIn}
+    onChange={() => setKeepLoggedIn(!keepLoggedIn)}
     id="keepLoggedIn"
     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
   />

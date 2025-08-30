@@ -222,7 +222,7 @@ const page = () => {
 {getOTPclicked?(<button onClick={handleSignUPClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Sign In</button>):(<button onClick={handleGetOTPClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Get OTP</button>)}
 
 <div className='flex items-center max-w-md justify-center'>
-  <span >Already have an account? <span onClick={()=>router.push("/signin")} className='text-[#367AFF] cursor-pointer underline text-[16px] font-medium'>Sign in</span></span>
+  <span >Already have an account? <span onClick={()=>router.push("/signin")} className='text-[#367AFF] cursor-pointer underline text-[16px] font-medium'>Sign up</span></span>
 </div>
 
       </div>

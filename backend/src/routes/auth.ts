@@ -33,7 +33,7 @@ router.post("/get-otp",async(req,res)=>{
 
 })
 router.post("/verify-otp",async(req,res)=>{
-    const {email,otp}=req.body;
+    const {email,otp,keepLoggedIn}=req.body;
     if(!email || !otp||email==""){
         return res.status(400).json({message:"Email and otp is required"});
     }
@@ -47,7 +47,7 @@ router.post("/verify-otp",async(req,res)=>{
         const token = jwt.sign(
     { id: user._id, email: user.email, name: user.name },
     process.env.JWT_SECRET!,
-    { expiresIn: "7d" }
+     { expiresIn: keepLoggedIn ? "30d" : "7d" }
   );
         return res.status(200).json({token,message:"OTP verified successfully"});
     }
