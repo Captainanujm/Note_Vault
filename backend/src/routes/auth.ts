@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import {Router} from "express";
 import User from "../models/User";
 import { sendOtpEmail } from "../utils/mailer";
+import jwt from "jsonwebtoken";
 const router = Router();
 router.post("/get-otp",async(req,res)=>{
     const {email,dob,name}=req.body;
@@ -12,15 +13,15 @@ router.post("/get-otp",async(req,res)=>{
     const otp=Math.floor(100000+Math.random()*900000).toString();
     const otpExpiry=new Date(Date.now()+10*60*1000);
     if(user){
+         if(!name||!dob){
+            return res.status(400).json({message:"Name and DOB required"});
+        }
         user.otp=otp;
         user.otpExpiry=otpExpiry;
         await user.save();
     }else{
-        if(!name){
-            return res.status(400).json({message:"Name is required for new users"});
-        }
-        if(!dob){
-            return res.status(400).json({message:"DOB is required for new users"});
+        if(!name||!dob){
+            return res.status(400).json({message:"Email does not exist. Sign up first"});
         }
         const newUser=new User({email,name,dob,otp,otpExpiry});
         await newUser.save();
@@ -46,7 +47,12 @@ router.post("/verify-otp",async(req,res)=>{
         user.otp=undefined;
         user.otpExpiry=undefined;
         await user.save();
-        return res.status(200).json({message:"OTP verified successfully"});
+        const token = jwt.sign(
+    { id: user._id, email: user.email, name: user.name },
+    process.env.JWT_SECRET!,
+    { expiresIn: "7d" }
+  );
+        return res.status(200).json({token,message:"OTP verified successfully"});
     }
 })
 export default router;

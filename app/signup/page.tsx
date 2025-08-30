@@ -1,6 +1,7 @@
 "use client";
 import React from 'react'
 import {useState,useRef,useEffect} from 'react'
+import axios from 'axios';
 import Image from 'next/image';
 const page = () => {
   const [email, setEmail] = useState("");
@@ -8,8 +9,42 @@ const page = () => {
   const [show,setShow]=useState(false);
   const [dob, setDob] = useState("");
     const [name, setName] = useState("");
-    const[getOTPclicked,setGetOTPcClicked]=useState(false);
+    const[getOTPclicked,setGetOTPClicked]=useState(false);
      const otpInputRef = useRef<HTMLInputElement>(null);
+     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+         setEmail(e.target.value);
+       }
+       const handleOTPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+         setOtp(e.target.value);
+       }
+       const handleDobChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          setDob(e.target.value);
+       }
+       const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          setName(e.target.value);
+       }
+       const handleGetOTPClick=async()=>{
+         try{
+           const res=await axios.post("http://localhost:5000/api/auth/get-otp",{email,name,dob});
+       if(res.status===200){
+          console.log("OTP sent successfully");
+            setGetOTPClicked(true);
+        }
+         }catch(error:any){
+          if (error.response) {
+            console.log(error.response.data.message);
+          } else {
+            console.log("Network Error:", error.message);
+          }
+         }
+       
+       }
+       const handleSignUPClick=async()=>{
+       const res= await axios.post("http://localhost:5000/api/auth/verify-otp",{email,otp,name,dob});
+       if(res.status===200){
+         console.log("User signed up successfully");
+       }
+       }
       useEffect(() => {
     if (getOTPclicked && otpInputRef.current) {
       setTimeout(() => {
@@ -43,7 +78,7 @@ const page = () => {
             type="text"
             id="name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleNameChange}
             placeholder=" "
             className="peer w-full rounded-md border border-gray-400 px-3 pt-5 pb-2 text-base text-gray-900 
                        focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
@@ -62,7 +97,7 @@ const page = () => {
             type="date"
             id="dob"
             value={dob}
-            onChange={(e) => setDob(e.target.value)}
+            onChange={handleDobChange}
             className="peer w-full rounded-md border border-gray-400 px-3 pt-5 pb-2 text-base text-gray-900 
                        focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none
                        [&::-webkit-calendar-picker-indicator]:opacity-100
@@ -82,7 +117,9 @@ const page = () => {
   <input
     type="email"
     id="email"
-    placeholder=" "
+    onChange={handleEmailChange}
+    value={email}
+    placeholder=' '
     className="peer w-full rounded-md border border-gray-400 px-3 pt-5 pb-2 text-base text-gray-900 
                focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
   />
@@ -105,6 +142,8 @@ const page = () => {
     type={show?"text":"password"}
     id="otp"
     placeholder=" "
+    onChange={handleOTPChange}
+    value={otp}
     className="peer w-full rounded-md border border-blue-500 px-3 pt-5 pb-2 text-base text-gray-900 
                focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
   />
@@ -171,9 +210,8 @@ const page = () => {
 
 
 
-{getOTPclicked?(<button className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Sign In</button>):(<button onClick={()=>{
-  setGetOTPcClicked(true);
-}} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Get OTP</button>)}
+
+{getOTPclicked?(<button onClick={handleSignUPClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Sign In</button>):(<button onClick={handleGetOTPClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Get OTP</button>)}
 
 <div className='flex items-center max-w-md justify-center'>
   <span >Already have an account? <span className='text-[#367AFF] underline text-[16px] font-medium'>Sign in</span></span>

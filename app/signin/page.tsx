@@ -1,11 +1,63 @@
 "use client";
 import React from 'react'
-import {useState} from 'react'
+import axios from 'axios';
+import {useState,useRef,useEffect} from 'react'
 import Image from 'next/image';
 const page = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [show,setShow]=useState(false);
+   const[getOTPclicked,setGetOTPClicked]=useState(false);
+       const otpInputRef = useRef<HTMLInputElement>(null);
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  }
+       const handleSignINClick=async()=>{
+        try{
+ const res= await axios.post("http://localhost:5000/api/auth/verify-otp",{email,otp});
+       if(res.status===200){
+         console.log("User signed in successfully");
+       }
+        }
+      catch (error: any) {
+    if (error.response) {
+      console.log(error.response.data.message);
+    } else {
+      // network error ya server down
+      console.log("Network Error:", error.message);
+    }
+  }
+       }
+    const handleGetOTPClick=async()=>{
+           try{
+               const res=await axios.post("http://localhost:5000/api/auth/get-otp",{email});
+           if(res.status===200){
+            console.log("OTP sent to email");
+            setGetOTPClicked(true);
+           }else{
+            console.log("Error sending OTP");
+           }
+           }catch(error:any){
+            if (error.response) {
+              console.log(error.response.data.message);
+            } else {
+              console.log("Network Error:", error.message);
+            }
+           }
+          
+    }
+  const handleOTPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOtp(e.target.value);
+  }
+    useEffect(() => {
+      if (getOTPclicked && otpInputRef.current) {
+        setTimeout(() => {
+          if (otpInputRef.current) {
+            otpInputRef.current.focus();
+          }
+        }, 100);
+      }
+    }, [getOTPclicked]);
   return (
     <div className='flex'>
     <div className='absolute lg:top-8 lg:left-8  flex justify-center items-center gap-1'>
@@ -30,6 +82,8 @@ const page = () => {
   {/* Input */}
   <input
     type="email"
+    onChange={handleEmailChange}
+    value={email}
     id="email"
     placeholder=" "
     className="peer w-full rounded-md border border-gray-400 px-3 pt-5 pb-2 text-base text-gray-900 
@@ -46,13 +100,17 @@ const page = () => {
     Email
   </label>
 </div>
- <div className="relative w-full max-w-md mb-2">
+{getOTPclicked &&
+<div className="relative w-full max-w-md mb-2">
   {/* Input */}
   <input
+   ref={otpInputRef}
     type={show?"text":"password"}
     id="otp"
     placeholder=" "
-    className="peer w-full rounded-md border border-gray-400 px-3 pt-5 pb-2 text-base text-gray-900 
+    onChange={handleOTPChange}
+    value={otp}
+    className="peer w-full rounded-md border border-blue-500 px-3 pt-5 pb-2 text-base text-gray-900 
                focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
   />
 
@@ -114,9 +172,9 @@ const page = () => {
           </button>
   </div>
   
-</div>
+</div>}
 <div>
-  <span className='text-[#367AFF] text-[16px] font-medium underline cursor-pointer'>Resend OTP</span>
+  <span onClick={handleGetOTPClick} className='text-[#367AFF] text-[16px] font-medium underline cursor-pointer'>Resend OTP</span>
 </div>
 
 <div className='flex gap-2 mt-2 items-center font-medium text-[16px]'>
@@ -133,8 +191,7 @@ const page = () => {
   </label>
 </div>
 
-<button className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-4 hover:bg-blue-600 transition-colors'>Sign In</button>
-
+{getOTPclicked?(<button onClick={handleSignINClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Sign In</button>):(<button onClick={handleGetOTPClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Get OTP</button>)}
 <div className='flex items-center max-w-md justify-center'>
   <span >Need an account? <span className='text-[#367AFF] underline text-[16px] font-medium'>Create one</span></span>
 </div>
