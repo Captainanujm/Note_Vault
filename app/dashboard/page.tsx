@@ -44,7 +44,10 @@ useEffect(() => {
       console.error("Failed to add note", err);
     }
   };
-
+const signOut = () => {
+  localStorage.removeItem("token");  
+  window.location.href = "/signin"; 
+};
    const deleteNote = async (id: string) => {
     try {
       await axios.delete(`http://localhost:5000/dashboard/${id}`, {
@@ -71,7 +74,7 @@ useEffect(() => {
 <h1 className='font-bold text-[20px]'>Dashboard</h1>
 
             </div>
-            <button className='bg-[#367AFF] p-2 text-[16px] rounded-lg text-white cursor-pointer'>Sign out</button>
+            <button onClick={signOut} className='bg-[#367AFF] p-2 text-[16px] rounded-lg text-white cursor-pointer'>Sign out</button>
 
         </div>
         <div className='bg-white border shadow-lg h-[130px] rounded-lg lg:min-w-md min-w-screen px-10 py-10'>

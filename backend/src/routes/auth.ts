@@ -13,9 +13,6 @@ router.post("/get-otp",async(req,res)=>{
     const otp=Math.floor(100000+Math.random()*900000).toString();
     const otpExpiry=new Date(Date.now()+10*60*1000);
     if(user){
-         if(user.name!=name||user.dob!=dob){
-            return res.status(400).json({message:"Please sign in!"});
-        }
         user.otp=otp;
         user.otpExpiry=otpExpiry;
         await user.save();
