@@ -7,14 +7,14 @@ const router = Router();
 router.post("/get-otp",async(req,res)=>{
     const {email,dob,name}=req.body;
     if(!email){
-        return res.status(400).json({message:"Email is required"});
+        return res.status(400).json({message:"Email is required!"});
     }
     const user=await User.findOne({email});
     const otp=Math.floor(100000+Math.random()*900000).toString();
     const otpExpiry=new Date(Date.now()+10*60*1000);
     if(user){
-         if(!name||!dob){
-            return res.status(400).json({message:"Name and DOB required"});
+         if(user.name!=name||user.dob!=dob){
+            return res.status(400).json({message:"Please sign in!"});
         }
         user.otp=otp;
         user.otpExpiry=otpExpiry;
