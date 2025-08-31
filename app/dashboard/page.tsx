@@ -5,7 +5,10 @@ import axios from 'axios';
   _id: string;
   content: string;
 }
+import { toast } from "react-toastify";
+import {useRouter} from "next/navigation";
 const page = () => {
+  const router=useRouter();
      const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState("");
   const [name,setName]=useState("");
@@ -15,6 +18,11 @@ const [adding,setAdding]=useState(false);
 useEffect(() => {
   const fetchData = async () => {
     try {
+      if(!localStorage.getItem("token")){
+       router.push("/signin");
+        toast.error("Please sign in first!");
+        return;
+      }
       const res = await axios.get("https://note-vault-4.onrender.com/dashboard", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -55,6 +63,7 @@ const signOut = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setNotes(notes.filter((n) => n._id !== id));
+      toast.success("Note deleted");
     } catch (err) {
       console.error("Failed to delete note", err);
     }
@@ -103,7 +112,7 @@ const signOut = () => {
         />
         <button
           onClick={addNote}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 text-white px-4 cursor-pointer py-2 rounded"
         >
           Add
         </button>
@@ -119,9 +128,9 @@ const signOut = () => {
       <span>{note.content}</span>
       <button
         onClick={() => deleteNote(note._id)}
-        className="text-black font-semibold hover:underline"
+        className="text-[#df0a0a] font-semibold hover:underline"
       >
-        Delete
+       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide cursor-pointer lucide-trash2-icon lucide-trash-2"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
       </button>
     </li>
   ))}
