@@ -10,6 +10,7 @@ const page = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [show,setShow]=useState(false);
+  const [loading,setLoading]=useState(false);
   const[keepLoggedIn,setKeepLoggedIn]=useState(false);
    const[getOTPclicked,setGetOTPClicked]=useState(false);
        const otpInputRef = useRef<HTMLInputElement>(null);
@@ -38,8 +39,10 @@ const page = () => {
        }
     const handleGetOTPClick=async()=>{
            try{
+            setLoading(true);
                const res=await axios.post("https://note-vault-4.onrender.com/api/auth/get-otp",{email});
            if(res.status===200){
+            setLoading(false);
            toast.success("OTP sent to email");
             setGetOTPClicked(true);
            }else{
@@ -201,7 +204,7 @@ const page = () => {
   </label>
 </div>
 
-{getOTPclicked?(<button onClick={handleSignINClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Sign In</button>):(<button onClick={handleGetOTPClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Get OTP</button>)}
+{getOTPclicked?(<button onClick={handleSignINClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>Sign in</button>):(<button onClick={handleGetOTPClick} className='bg-[#367AFF] text-white text-[18px] font-semibold w-full max-w-md rounded-md py-[16px] px-[8px] mt-2 hover:bg-blue-600 transition-colors'>{loading?"Please wait...":"Get OTP"}</button>)}
 <div className='flex items-center max-w-md justify-center'>
   <span >Need an account? <span onClick={()=>router.push("/signup")} className='text-[#367AFF] cursor-pointer underline text-[16px] font-medium'>Create one</span></span>
 </div>
