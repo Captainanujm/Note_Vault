@@ -91,7 +91,7 @@ const page = () => {
 <span className='font-[24px] font-bold m-1'>HD</span>
     </div>
       
-      <div className='flex flex-col gap-2 justify-center m-auto lg:ml-18 lg:w-1/2 h-dvh overflow-y-auto'>
+      <div className='flex flex-col gap-2 justify-center m-auto lg:ml-18 lg:w-1/2 min-h-screen'>
         <div className='flex flex-col'>
          <h1 className='font-bold text-[30px] ml-2'>Sign in</h1>
         <p className='text-[18px] text-[#969696] m-2 '>Please login to continue to your account</p>
