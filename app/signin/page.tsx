@@ -4,6 +4,7 @@ import axios from 'axios';
 import {useState,useRef,useEffect} from 'react'
 import { toast } from "react-toastify";
 import {useRouter} from "next/navigation";
+import { GoogleLogin } from "@react-oauth/google";
 import Image from 'next/image';
 const page = () => {
   const router=useRouter();
@@ -13,6 +14,7 @@ const page = () => {
   const [loading,setLoading]=useState(false);
   const[keepLoggedIn,setKeepLoggedIn]=useState(false);
    const[getOTPclicked,setGetOTPClicked]=useState(false);
+   const [googleLoading, setGoogleLoading] = useState(false);
        const otpInputRef = useRef<HTMLInputElement>(null);
        const isValidEmail = (email: string) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -20,6 +22,71 @@ const page = () => {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   }
+     const handleSuccess = async (credentialResponse: any) => {
+    try {
+      setGoogleLoading(true);
+      const googleToken = credentialResponse.credential;
+      
+      console.log("🔑 Google Client ID:", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+      console.log("🎫 Token received:", !!googleToken);
+      
+      if (!googleToken) {
+        toast.error("Google token not found");
+        return;
+      }
+
+      const url = "http://localhost:5000/api/auth/google";
+      console.log("📡 Making request to:", url);
+
+      // Send token to backend
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ token: googleToken }),
+      });
+
+      console.log("📊 Response status:", res.status);
+      console.log("📋 Response headers:", Object.fromEntries(res.headers.entries()));
+      
+      // Get response text first to see what we're actually receiving
+      const responseText = await res.text();
+      console.log("📝 Raw response:", responseText.substring(0, 200) + "...");
+      
+      // Try to parse as JSON
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log("✅ Parsed JSON data:", data);
+      } catch (parseError) {
+        console.error("❌ JSON Parse Error:", parseError);
+        console.error("🔍 Response was:", responseText);
+        toast.error("Server returned invalid response. Check console for details.");
+        return;
+      }
+      
+      if (res.ok && data.token) {
+        localStorage.setItem("token", data.token);
+        toast.success("Google sign in successful!");
+        router.push("/dashboard");
+      } else {
+        console.error("❌ Backend response error:", data);
+        toast.error(data.error || `Server error: ${res.status}`);
+      }
+    } catch (err) {
+      console.error("💥 Google auth error:", err);
+      toast.error("Network error occurred during Google sign in");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  const handleError = () => {
+    console.error("❌ Google Sign In Failed");
+    toast.error("Google Sign In Failed");
+  };
        const handleSignINClick=async()=>{
         try{
  const res= await axios.post("https://note-vault-4.onrender.com/api/auth/verify-otp",{email,otp,keepLoggedIn});
@@ -90,13 +157,16 @@ const page = () => {
 </svg>
 <span className='font-[24px] font-bold m-1'>HD</span>
     </div>
-      
+
       <div className='flex flex-col gap-2 justify-center m-auto lg:ml-18 lg:w-1/2 min-h-screen'>
+        <div className='flex justify-center w-full max-w-md m-2'>
+            <GoogleLogin onSuccess={handleSuccess} onError={handleError} />
+        </div>
         <div className='flex flex-col'>
          <h1 className='font-bold text-[30px] ml-2'>Sign in</h1>
         <p className='text-[18px] text-[#969696] m-2 '>Please login to continue to your account</p>
         </div>
-       
+             
          <div className="relative w-full max-w-md mb-2">
   {/* Input */}
   <input

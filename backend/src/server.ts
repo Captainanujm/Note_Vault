@@ -4,6 +4,10 @@ import { Router } from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth";
 import notesRoutes from "./routes/Notes";
+import jwt from "jsonwebtoken";
+import User from "./models/User";
+import dotenv from "dotenv";
+dotenv.config();
 const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 5000;
@@ -18,6 +22,7 @@ app.use("/api/auth",authRoutes);
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello from TypeScript backend 🚀");
 });
+
 
 // Start server
 app.listen(PORT, () => {
