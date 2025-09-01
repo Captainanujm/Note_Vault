@@ -35,7 +35,7 @@ const page = () => {
         return;
       }
 
-      const url = "http://localhost:5000/api/auth/google";
+      const url = "https://note-vault-4.onrender.com/api/auth/google";
       console.log("📡 Making request to:", url);
 
       // Send token to backend
