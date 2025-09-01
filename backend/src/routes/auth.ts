@@ -49,7 +49,7 @@ router.post("/google", async (req, res) => {
         // Verify Google token
         const ticket = await client.verifyIdToken({
             idToken: googleToken,
-            audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+            audience: process.env.GOOGLE_CLIENT_ID,
         });
         
         const payload = ticket.getPayload();
