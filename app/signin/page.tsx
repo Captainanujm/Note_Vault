@@ -72,11 +72,11 @@ const page = () => {
         toast.success("Google sign in successful!");
         router.push("/dashboard");
       } else {
-        console.error("❌ Backend response error:", data);
+        console.error(" Backend response error:", data);
         toast.error(data.error || `Server error: ${res.status}`);
       }
     } catch (err) {
-      console.error("💥 Google auth error:", err);
+      console.error("Google auth error:", err);
       toast.error("Network error occurred during Google sign in");
     } finally {
       setGoogleLoading(false);
@@ -84,7 +84,7 @@ const page = () => {
   };
 
   const handleError = () => {
-    console.error("❌ Google Sign In Failed");
+    console.error("Google Sign In Failed");
     toast.error("Google Sign In Failed");
   };
        const handleSignINClick=async()=>{
